@@ -99,6 +99,13 @@ static int check_vendor_module()
 
 #define KEY_VIDEO_HFR_VALUES "video-hfr-values"
 
+static bool is_4k_video(android::CameraParameters &params) {
+    int video_width, video_height;
+    params.getVideoSize(&video_width, &video_height);
+    ALOGV("%s : VideoSize is %x", __FUNCTION__, video_width * video_height);
+    return video_width * video_height > 1920 * 1080;
+}
+
 static char *camera_fixup_getparams(int __attribute__((unused)) id,
     const char *settings)
 {
@@ -299,6 +306,19 @@ static int camera_start_recording(struct camera_device *device)
 
     if (!device)
         return EINVAL;
+
+    android::CameraParameters parameters;
+    parameters.unflatten(android::String8(camera_get_parameters(device)));
+
+    if (is_4k_video(parameters)) {
+        ALOGV("%s : UHD detected, switching preview-format to nv12-venus", __FUNCTION__);
+        parameters.set("preview-format", "nv12-venus");
+        camera_set_parameters(device, strdup(parameters.flatten().string()));
+    }
+
+    android::CameraParameters parameters2;
+    parameters2.unflatten(android::String8(VENDOR_CALL(device, get_parameters)));
+    parameters2.dump();
 
     return VENDOR_CALL(device, start_recording);
 }
