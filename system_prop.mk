@@ -5,13 +5,13 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # Audio
 PRODUCT_PROPERTY_OVERRIDES += \
     af.fast_track_multiplier=1 \
-    av.offload.enable=false \
+    audio.offload.video=true \
     persist.audio.fluence.speaker=true \
     persist.audio.fluence.voicecall=true \
     persist.audio.fluence.voicerec=false \
     ro.qc.sdk.audio.fluencetype=fluence \
     use.voice.path.for.pcm.voip=false \
-    use.dedicated.device.for.voip=true
+    use.dedicated.device.for.voip=true \
     audio.deep_buffer.media=true
 
 # Camera
